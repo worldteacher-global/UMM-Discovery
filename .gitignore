@@ -39,3 +39,6 @@ Thumbs.db
 # Not own files #
 #################
 combat.py
+
+########
+venv/
