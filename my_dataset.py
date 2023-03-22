@@ -21,32 +21,34 @@ import numpy as np
 
 class bbbc021_dataset(Dataset):
     def __init__(self, root_dir, metadata, label_header, transform=None):
+        #root_dir: directory with the images
+        #transform: optional transfornations 
         super(bbbc021_dataset, self).__init__()
-        self.df = pd.read_csv(os.path.join(root_dir, metadata), sep='\t')
+        self.df = pd.read_csv(os.path.join(root_dir, metadata), sep='\t') # reads in the csv containng the image annotations "image file name, coordiantes, etc"
         self.root_dir = root_dir
         self.transform = transform
-        self.label_header = label_header
+        self.label_header = label_header #column in the dataset for unique classes?
 
         self.add_columns()
 
-        self.class_to_idx = dict()
-        self.classes = []
+        self.class_to_idx = dict() # creates an empty dictionary
+        self.classes = [] # creates an empty list
         i = 0
-        for c in self.df[label_header].unique():
-            self.classes.append(c)
-            self.class_to_idx[c] = i
+        for c in self.df[label_header].unique(): # gets unique classes
+            self.classes.append(c) # creates a list of unique classes
+            self.class_to_idx[c] = i # creates a value key pair where value is a number and key is a class
             i += 1
 
-        self.imgs = []
+        self.imgs = [] # creates an empty list
         for row in range(len(self.df)):
-            img_name_ch1 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_dna'].iloc[row])
-            img_name_ch2 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_tubulin'].iloc[row])
-            img_name_ch3 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_actin'].iloc[row])
-            label = self.class_to_idx[self.df[label_header].iloc[row]]
-            item = (img_name_ch1, img_name_ch2, img_name_ch3, label)
-            self.imgs.append(item)
+            img_name_ch1 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_dna'].iloc[row]) #path of a series of this channel
+            img_name_ch2 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_tubulin'].iloc[row]) #path of a series of this channel
+            img_name_ch3 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_actin'].iloc[row]) #path of a series of this channel
+            label = self.class_to_idx[self.df[label_header].iloc[row]] #dictionary key (unique class)
+            item = (img_name_ch1, img_name_ch2, img_name_ch3, label) #tuple of image channels and the key(unique class)
+            self.imgs.append(item) #add to the image list
 
-    def __getitem__(self, index):
+    def __getitem__(self, index): #reads in the images | This is memory efficient because all the images are not stored in the memory at once but read as required
         img_name_ch1, img_name_ch2, img_name_ch3, label = self.imgs[index]
         img1 = np.asarray(Image.open(img_name_ch1))
         img2 = np.asarray(Image.open(img_name_ch2))
