@@ -30,7 +30,7 @@ class bbbc021_dataset(Dataset):
         self.transform = transform
         self.label_header = label_header #column in the dataset for unique classes?
 
-        self.add_columns()
+        # self.add_columns()
 
         self.class_to_idx = dict() # creates an empty dictionary
         self.classes = [] # creates an empty list
@@ -54,7 +54,8 @@ class bbbc021_dataset(Dataset):
             self.imgs.append(item) #add to the image list
 
     def __getitem__(self, index): #reads in the images | This is memory efficient because all the images are not stored in the memory at once but read as required
-        img_name_ch1, img_name_ch2, img_name_ch3, label = self.imgs[index]
+        # img_name_ch1, img_name_ch2, img_name_ch3, label = self.imgs[index]
+        img_name_ch1, img_name_ch2, label = self.imgs[index]
         img1 = np.asarray(Image.open(img_name_ch1))
         img2 = np.asarray(Image.open(img_name_ch2))
         # img3 = np.asarray(Image.open(img_name_ch3))
@@ -76,13 +77,14 @@ class bbbc021_dataset(Dataset):
         rel_dose_list = list()
         for i, row in self.df.iterrows():
             compound = self.df.loc[i, 'compound']
+            print('before if statment')
             if (compound == 'POS-000001'):
                 rel_dose_list.append(0)#
-            # else:
-            #     d = self.df.loc[i, 'compound_uM'] / max(self.df.loc[self.df['compound'] == compound, 'compound_uM'])
-            #     rel_dose_list.append(d)
+        #     # else:
+        #     #     d = self.df.loc[i, 'compound_uM'] / max(self.df.loc[self.df['compound'] == compound, 'compound_uM'])
+        #     #     rel_dose_list.append(d)
         self.df['rel_dose_adjust'] = rel_dose_list
-        self.df['compound'] = self.df['compound'].str.replace(',', '.')
+        # self.df['compound'] = self.df['compound'].str.replace(',', '.')
         # self.df['batch'] = 'Batch_' + self.df['table_nr'].map(str)
 
     def get_df(self):
