@@ -78,9 +78,9 @@ class bbbc021_dataset(Dataset):
             compound = self.df.loc[i, 'compound']
             if (compound == 'DMSO'):
                 rel_dose_list.append(0)
-            else:
-                d = self.df.loc[i, 'compound_uM'] / max(self.df.loc[self.df['compound'] == compound, 'compound_uM'])
-                rel_dose_list.append(d)
+            # else:
+            #     d = self.df.loc[i, 'compound_uM'] / max(self.df.loc[self.df['compound'] == compound, 'compound_uM'])
+            #     rel_dose_list.append(d)
         self.df['rel_dose_adjust'] = rel_dose_list
         self.df['compound'] = self.df['compound'].str.replace(',', '.')
         # self.df['batch'] = 'Batch_' + self.df['table_nr'].map(str)
