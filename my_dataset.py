@@ -24,17 +24,13 @@ class bbbc021_dataset(Dataset):
         #root_dir: directory with the images
         #transform: optional transfornations 
         super(bbbc021_dataset, self).__init__()
-        self.df = pd.read_csv(os.path.join(root_dir, metadata), sep='\t') # reads in the csv containng the image annotations "image file name, coordiantes, etc"
+        self.df = pd.read_csv(os.path.join(root_dir, metadata), sep=',') # reads in the csv containng the image annotations "image file name, coordiantes, etc"
         # self.df = pd.read_csv(os.path.join(root_dir, metadata), sep=',') # reads in the csv containng the image annotations "image file name, coordiantes, etc"
         self.root_dir = root_dir
         self.transform = transform
         self.label_header = label_header #column in the dataset for unique classes?
 
-        print(self.df.head())
-
-
-
-        # self.add_columns()
+        self.add_columns()
 
         # self.class_to_idx = dict() # creates an empty dictionary
         # self.classes = [] # creates an empty list
@@ -81,7 +77,7 @@ class bbbc021_dataset(Dataset):
         rel_dose_list = list()
         for i, row in self.df.iterrows():
             compound = self.df.loc[i, 'compound']
-            if (compound == '1'):
+            if (compound == 'PTO-000001'):
                 rel_dose_list.append(0)
         #     # else:
         #     #     d = self.df.loc[i, 'compound_uM'] / max(self.df.loc[self.df['compound'] == compound, 'compound_uM'])
