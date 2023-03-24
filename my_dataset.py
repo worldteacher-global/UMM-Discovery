@@ -24,7 +24,8 @@ class bbbc021_dataset(Dataset):
         #root_dir: directory with the images
         #transform: optional transfornations 
         super(bbbc021_dataset, self).__init__()
-        self.df = pd.read_csv(os.path.join(root_dir, metadata), sep='\t') # reads in the csv containng the image annotations "image file name, coordiantes, etc"
+        # self.df = pd.read_csv(os.path.join(root_dir, metadata), sep='\t') # reads in the csv containng the image annotations "image file name, coordiantes, etc"
+        self.df = pd.read_csv(os.path.join(root_dir, metadata), sep=',') # reads in the csv containng the image annotations "image file name, coordiantes, etc"
         self.root_dir = root_dir
         self.transform = transform
         self.label_header = label_header #column in the dataset for unique classes?
@@ -40,23 +41,28 @@ class bbbc021_dataset(Dataset):
             i += 1
 
         self.imgs = [] # creates an empty list
-        for row in range(len(self.df)):
-            img_name_ch1 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_dna'].iloc[row]) #path of a series of this channel
-            img_name_ch2 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_tubulin'].iloc[row]) #path of a series of this channel
-            img_name_ch3 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_actin'].iloc[row]) #path of a series of this channel
+        for row in range(self.df.shape[0]//2):
+            # img_name_ch1 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_dna'].iloc[row]) #path of a series of this channel
+            # img_name_ch2 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_tubulin'].iloc[row]) #path of a series of this channel
+            # img_name_ch3 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_actin'].iloc[row]) #path of a series of this channel
+            img_name_ch1 = os.path.join(self.df['image_root_folder'].iloc[row],self.df[self.df.ChannelID.eq('2')]['URL'].iloc[row])
+            img_name_ch2 = os.path.join(self.df['image_root_folder'].iloc[row],self.df[self.df.ChannelID.eq('1')]['URL'].iloc[row])
+
             label = self.class_to_idx[self.df[label_header].iloc[row]] #dictionary key (unique class)
-            item = (img_name_ch1, img_name_ch2, img_name_ch3, label) #tuple of image channels and the key(unique class)
+            # item = (img_name_ch1, img_name_ch2, img_name_ch3, label) #tuple of image channels and the key(unique class)
+            item = (img_name_ch1, img_name_ch2, label) #tuple of image channels and the key(unique class)
             self.imgs.append(item) #add to the image list
 
     def __getitem__(self, index): #reads in the images | This is memory efficient because all the images are not stored in the memory at once but read as required
         img_name_ch1, img_name_ch2, img_name_ch3, label = self.imgs[index]
         img1 = np.asarray(Image.open(img_name_ch1))
         img2 = np.asarray(Image.open(img_name_ch2))
-        img3 = np.asarray(Image.open(img_name_ch3))
-        image = np.zeros((img1.shape[0], img1.shape[1], 3), dtype='float')
+        # img3 = np.asarray(Image.open(img_name_ch3))
+        # image = np.zeros((img1.shape[0], img1.shape[1], 3), dtype='float')
+        image = np.zeros((img1.shape[0], img1.shape[1], 2), dtype='float')
         image[:,:,0] = img1.copy()
         image[:,:,1] = img2.copy()
-        image[:,:,2] = img3.copy()
+        # image[:,:,2] = img3.copy()
 
         if self.transform:
             image = self.transform(image)
@@ -77,7 +83,7 @@ class bbbc021_dataset(Dataset):
                 rel_dose_list.append(d)
         self.df['rel_dose_adjust'] = rel_dose_list
         self.df['compound'] = self.df['compound'].str.replace(',', '.')
-        self.df['batch'] = 'Batch_' + self.df['table_nr'].map(str)
+        # self.df['batch'] = 'Batch_' + self.df['table_nr'].map(str)
 
     def get_df(self):
         return self.df
