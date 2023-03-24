@@ -32,9 +32,9 @@ class bbbc021_dataset(Dataset):
 
         self.add_columns()
 
-        # self.class_to_idx = dict() # creates an empty dictionary
-        # self.classes = [] # creates an empty list
-        # i = 0
+        self.class_to_idx = dict() # creates an empty dictionary
+        self.classes = [] # creates an empty list
+        i = 0
         # for c in self.df[label_header].unique(): # gets unique classes
         #     self.classes.append(c) # creates a list of unique classes
         #     self.class_to_idx[c] = i # creates a value key pair where value is a number and key is a class
