@@ -24,8 +24,8 @@ class bbbc021_dataset(Dataset):
         #root_dir: directory with the images
         #transform: optional transfornations 
         super(bbbc021_dataset, self).__init__()
-        # self.df = pd.read_csv(os.path.join(root_dir, metadata), sep='\t') # reads in the csv containng the image annotations "image file name, coordiantes, etc"
-        self.df = pd.read_csv(os.path.join(root_dir, metadata), sep=',') # reads in the csv containng the image annotations "image file name, coordiantes, etc"
+        self.df = pd.read_csv(os.path.join(root_dir, metadata), sep='\t') # reads in the csv containng the image annotations "image file name, coordiantes, etc"
+        # self.df = pd.read_csv(os.path.join(root_dir, metadata), sep=',') # reads in the csv containng the image annotations "image file name, coordiantes, etc"
         self.root_dir = root_dir
         self.transform = transform
         self.label_header = label_header #column in the dataset for unique classes?
@@ -77,7 +77,7 @@ class bbbc021_dataset(Dataset):
         for i, row in self.df.iterrows():
             compound = self.df.loc[i, 'compound']
             if (compound == 'DMSO'):
-                rel_dose_list.append(0)
+                rel_dose_list.append(0)#
             # else:
             #     d = self.df.loc[i, 'compound_uM'] / max(self.df.loc[self.df['compound'] == compound, 'compound_uM'])
             #     rel_dose_list.append(d)
