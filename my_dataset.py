@@ -35,10 +35,10 @@ class bbbc021_dataset(Dataset):
         self.class_to_idx = dict() # creates an empty dictionary
         self.classes = [] # creates an empty list
         i = 0
-        # for c in self.df[label_header].unique(): # gets unique classes
-        #     self.classes.append(c) # creates a list of unique classes
-        #     self.class_to_idx[c] = i # creates a value key pair where value is a number and key is a class
-        #     i += 1
+        for c in self.df[label_header].unique(): # gets unique classes
+            self.classes.append(c) # creates a list of unique classes
+            self.class_to_idx[c] = i # creates a value key pair where value is a number and key is a class
+            i += 1
 
         # self.imgs = [] # creates an empty list
         # for row in range(self.df.shape[0]//2):
@@ -86,5 +86,5 @@ class bbbc021_dataset(Dataset):
         self.df['compound'] = self.df['compound'].str.replace(',', '.')
         self.df['batch'] = 'Batch_' + self.df['table_nr'].map(str)
 
-    # def get_df(self):
-    #     return self.df
+    def get_df(self):
+        return self.df
