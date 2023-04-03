@@ -27,7 +27,8 @@ import pandas as pd
 import faiss
 
 from scipy.sparse import csr_matrix, find
-import skimage.external.tifffile as sktiff
+# import skimage.external.tifffile as sktiff
+import tifffile as sktiff
 import torch
 import torch.utils.data as data
 import torchvision.transforms as transforms
