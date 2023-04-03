@@ -39,39 +39,39 @@ class bbbc021_dataset(Dataset):
             self.classes.append(c) # creates a list of unique classes
             self.class_to_idx[c] = i # creates a value key pair where value is a number and key is a class
             i += 1
+        
+        self.imgs = [] # creates an empty list
+        for row in range(self.df.shape[0]//2):
+            # img_name_ch1 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_dna'].iloc[row]) #path of a series of this channel
+        # #     # img_name_ch2 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_tubulin'].iloc[row]) #path of a series of this channel
+        # #     # img_name_ch3 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_actin'].iloc[row]) #path of a series of this channel
+            img_name_ch1 = os.path.join(self.df['image_root_folder'].iloc[row],self.df[self.df.ChannelID.eq(2)]['URL'].iloc[row])
+            img_name_ch2 = os.path.join(self.root_dir,self.df['image_root_folder'].iloc[row],self.df[self.df.ChannelID.eq(1)]['URL'].iloc[row])
 
-        # self.imgs = [] # creates an empty list
-        # for row in range(self.df.shape[0]//2):
-        #     # img_name_ch1 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_dna'].iloc[row]) #path of a series of this channel
-        #     # img_name_ch2 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_tubulin'].iloc[row]) #path of a series of this channel
-        #     # img_name_ch3 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_actin'].iloc[row]) #path of a series of this channel
-        #     img_name_ch1 = os.path.join(self.df['image_root_folder'].iloc[row],self.df[self.df.ChannelID.eq('2')]['URL'].iloc[row])
-        #     img_name_ch2 = os.path.join(self.df['image_root_folder'].iloc[row],self.df[self.df.ChannelID.eq('1')]['URL'].iloc[row])
+            label = self.class_to_idx[self.df[label_header].iloc[row]] #dictionary key (unique class)
+            # item = (img_name_ch1, img_name_ch2, img_name_ch3, label) #tuple of image channels and the key(unique class)
+            item = (img_name_ch1, img_name_ch2, label) #tuple of image channels and the key(unique class)
+            self.imgs.append(item) #add to the image list
 
-        #     label = self.class_to_idx[self.df[label_header].iloc[row]] #dictionary key (unique class)
-        #     # item = (img_name_ch1, img_name_ch2, img_name_ch3, label) #tuple of image channels and the key(unique class)
-        #     item = (img_name_ch1, img_name_ch2, label) #tuple of image channels and the key(unique class)
-        #     self.imgs.append(item) #add to the image list
+    def __getitem__(self, index): #reads in the images | This is memory efficient because all the images are not stored in the memory at once but read as required
+        # img_name_ch1, img_name_ch2, img_name_ch3, label = self.imgs[index]
+        img_name_ch1, img_name_ch2, label = self.imgs[index]
+        img1 = np.asarray(Image.open(img_name_ch1))
+        img2 = np.asarray(Image.open(img_name_ch2))
+        # img3 = np.asarray(Image.open(img_name_ch3))
+        # image = np.zeros((img1.shape[0], img1.shape[1], 3), dtype='float')
+        image = np.zeros((img1.shape[0], img1.shape[1], 2), dtype='float')
+        image[:,:,0] = img1.copy()
+        image[:,:,1] = img2.copy()
+        # image[:,:,2] = img3.copy()
 
-    # def __getitem__(self, index): #reads in the images | This is memory efficient because all the images are not stored in the memory at once but read as required
-    #     # img_name_ch1, img_name_ch2, img_name_ch3, label = self.imgs[index]
-    #     img_name_ch1, img_name_ch2, label = self.imgs[index]
-    #     img1 = np.asarray(Image.open(img_name_ch1))
-    #     img2 = np.asarray(Image.open(img_name_ch2))
-    #     # img3 = np.asarray(Image.open(img_name_ch3))
-    #     # image = np.zeros((img1.shape[0], img1.shape[1], 3), dtype='float')
-    #     image = np.zeros((img1.shape[0], img1.shape[1], 2), dtype='float')
-    #     image[:,:,0] = img1.copy()
-    #     image[:,:,1] = img2.copy()
-    #     # image[:,:,2] = img3.copy()
+        if self.transform:
+            image = self.transform(image)
 
-    #     if self.transform:
-    #         image = self.transform(image)
+        return image, label
 
-    #     return image, label
-
-    # def __len__(self):
-    #     return len(self.df)
+    def __len__(self):
+        return len(self.df)
 
     def add_columns(self):
         rel_dose_list = list()
