@@ -35,7 +35,7 @@ import torchvision.transforms as transforms
 import my_transform
 
 from sklearn.decomposition import PCA as sk_PCA
-from umap import UMAP
+from umap.umap_ import UMAP
 from MulticoreTSNE import MulticoreTSNE as TSNE
 from sklearn.manifold import TSNE as sk_TSNE
 from hdbscan import HDBSCAN
@@ -103,7 +103,7 @@ def preprocess_features(npdata, n_components=16, method='PCA', n_jobs=1):
         npdata = mat.apply_py(npdata)
     # Apply UMAP for dimensionality reduction
     elif method == 'UMAP':
-        fit = UMAP(n_components=n_components, metric='cosine')
+        fit = UMAP.UMAP(n_components=n_components, metric='cosine')
         npdata = np.ascontiguousarray(fit.fit_transform(npdata))
     # Apply T-SNE for dimensionality reduction
     elif method == 'TSNE':
