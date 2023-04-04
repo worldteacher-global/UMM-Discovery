@@ -21,7 +21,7 @@ import seaborn as sns
 
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-from umap import UMAP
+from umap.umap_ import UMAP
 
 from sklearn.metrics import accuracy_score, confusion_matrix
 from scipy.spatial.distance import pdist, squareform
@@ -83,7 +83,7 @@ def plot_embeddings(df_well, embeds_cols, moa_unique_list, savepath):
     pca95_well = PCA(n_components=number_of_components_95(df_well, embeds_cols)).fit_transform(df_well[embeds_cols])
     pca_tsne_well = TSNE(metric='cosine', n_jobs=1).fit_transform(pca95_well)
     tsne_well = TSNE(metric='cosine', n_jobs=1).fit_transform(df_well[embeds_cols])
-    umap_well = UMAP(metric='cosine').fit_transform(df_well[embeds_cols])
+    umap_well = UMAP.UMAP(metric='cosine').fit_transform(df_well[embeds_cols])
 
     fig, axs = plt.subplots(ncols=2, nrows=2, figsize=(24, 24))
     sns.scatterplot(
