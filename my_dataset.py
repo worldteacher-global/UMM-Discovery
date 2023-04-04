@@ -56,11 +56,11 @@ class bbbc021_dataset(Dataset):
     def __getitem__(self, index): #reads in the images | This is memory efficient because all the images are not stored in the memory at once but read as required
         # img_name_ch1, img_name_ch2, img_name_ch3, label = self.imgs[index]
         img_name_ch1, img_name_ch2, label = self.imgs[index]
-        img1 = np.asarray(Image.open(img_name_ch1),dtype=np.float64)
-        img2 = np.asarray(Image.open(img_name_ch2),dtype=np.float64)
+        img1 = np.asarray(Image.open(img_name_ch1))
+        img2 = np.asarray(Image.open(img_name_ch2))
         # img3 = np.asarray(Image.open(img_name_ch3))
         # image = np.zeros((img1.shape[0], img1.shape[1], 3), dtype='float')
-        image = np.zeros((img1.shape[0], img1.shape[1], 2), dtype='float')
+        image = np.zeros((img1.shape[0], img1.shape[1], 2), dtype='float32')
         image[:,:,0] = img1.copy()
         image[:,:,1] = img2.copy()
         # image[:,:,2] = img3.copy()
