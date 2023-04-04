@@ -46,3 +46,4 @@ IMAGE_DATA/
 # VENV/
 venv_
 .venv
+_venv
