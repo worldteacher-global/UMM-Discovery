@@ -118,7 +118,7 @@ def compute_features(dataloader, model, N, args):
     for i, (input_tensor, _) in enumerate(dataloader):
         input_var = torch.autograd.Variable(input_tensor)#.cuda())
         with torch.no_grad():
-            aux = model(input_var).data.cpu().numpy().astype('float32')  
+            aux = model(input_var).data.numpy().astype('float32') # .cpu()
 
         if i == 0:
             features = np.zeros((N, aux.shape[1])).astype('float32')
