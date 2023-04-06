@@ -55,15 +55,15 @@ class MultiScaleNet(nn.Module):
 
 def make_layers(input_dim):
     layers = []
-    layers.append(MSBlock(input_dim, 6, 9))
-    layers.append(MSBlock(12, 12, 20))
-    layers.append(MSBlock(32, 16, 32))
-    layers.append(MSBlock(64, 16, 32))
-    layers.append(MSBlock(96, 16, 32))
-    layers.append(Collapse(128))
-    layers.append(Dense(128)),
-    layers.append(nn.BatchNorm2d(128)),
-    layers.append(nn.ReLU(True)),
+    layers.append(MSBlock(input_dim, 6, 9)) # N = , C =2 , H =1080 , W =1080 
+    layers.append(MSBlock(11, 12, 20))
+    layers.append(MSBlock(31, 16, 32))
+    layers.append(MSBlock(63, 16, 32))
+    layers.append(MSBlock(95, 16, 32))
+    layers.append(Collapse(127))
+    layers.append(Dense(127))#,
+    layers.append(nn.BatchNorm2d(127))#,
+    layers.append(nn.ReLU(True))#,
     return nn.Sequential(*layers)
 
 

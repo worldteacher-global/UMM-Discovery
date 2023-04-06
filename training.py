@@ -63,7 +63,7 @@ def train(loader, model, crit, opt, epoch, args):
     for i, (input_tensor, target) in enumerate(loader):
         data_time.update(time.time() - end)
 
-        target = target.cuda()
+        target = target#.cuda()
         input_var = torch.autograd.Variable(input_tensor)#.cuda())
         target_var = torch.autograd.Variable(target)
 
