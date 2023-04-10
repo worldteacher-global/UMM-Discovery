@@ -41,12 +41,14 @@ class bbbc021_dataset(Dataset):
             i += 1
         
         self.imgs = [] # creates an empty list
-        for row in range(self.df.shape[0]//2):
+        for row in range(self.df.shape[0]):
             # img_name_ch1 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_dna'].iloc[row]) #path of a series of this channel
-        # #     # img_name_ch2 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_tubulin'].iloc[row]) #path of a series of this channel
+            # img_name_ch2 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_tubulin'].iloc[row]) #path of a series of this channel
         # #     # img_name_ch3 = os.path.join(self.root_dir, self.df['plate'].iloc[row], self.df['filename_actin'].iloc[row]) #path of a series of this channel
-            img_name_ch1 = os.path.join(self.df['image_root_folder'].iloc[row],self.df[self.df.ChannelID.eq(2)]['URL'].iloc[row])
-            img_name_ch2 = os.path.join(self.root_dir,self.df['image_root_folder'].iloc[row],self.df[self.df.ChannelID.eq(1)]['URL'].iloc[row])
+            # img_name_ch1 = os.path.join(self.df['image_root_folder'].iloc[row],self.df[self.df.ChannelID.eq(2)]['URL'].iloc[row])
+            # img_name_ch2 = os.path.join(self.root_dir,self.df['image_root_folder'].iloc[row],self.df[self.df.ChannelID.eq(1)]['URL'].iloc[row])
+            img_name_ch1 = os.path.join(self.root_dir, self.df['image_root_folder'].iloc[row], self.df['HOECHST_IMAGE'].iloc[row]) #path of a series of this channel
+            img_name_ch2 = os.path.join(self.root_dir, self.df['image_root_folder'].iloc[row], self.df['mCHERRY_IMAGE'].iloc[row]) #path of a series of this channel
 
             label = self.class_to_idx[self.df[label_header].iloc[row]] #dictionary key (unique class)
             # item = (img_name_ch1, img_name_ch2, img_name_ch3, label) #tuple of image channels and the key(unique class)
