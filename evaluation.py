@@ -86,7 +86,7 @@ def collapse_domain(df, headers, do_median=True, remove_dmso=False):
 
 
 def collapse_well_level(df, do_median=True, remove_dmso=False):
-    avg_df = collapse_domain(df, ['batch', 'plate', 'well', 'compound', 'compound_uM', 'pseudoclass', 'moa'], do_median,
+    avg_df = collapse_domain(df, ['batch', 'plate', 'compound', 'compound_uM', 'pseudoclass', 'moa'], do_median, # removed: 'well' 
                              remove_dmso)
     return avg_df
 
