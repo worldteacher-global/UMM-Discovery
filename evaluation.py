@@ -105,7 +105,7 @@ def collapse_plate_level(df, do_median=True, remove_dmso=False):
 
 def collapse_batch_level(df, do_median=True, remove_dmso=False):
     avg_df = collapse_domain(df, ['batch', 'compound', 'compound_uM', 'pseudoclass', 'moa'], do_median, remove_dmso)
-    avg_df = avg_df.drop(columns=['replicate'])
+    # avg_df = avg_df.drop(columns=['replicate'])
     return avg_df
 
 
