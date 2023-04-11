@@ -62,6 +62,7 @@ def correct_combat(df, embeds_cols, verbose=False):
 
     # Covariants
     mod = patsy.dmatrix("~ compound + compound_uM", df, return_type="dataframe")
+    # ebat = combat(exp, df['plate'], mod, "compound_uM")
     ebat = combat(exp, df['plate'], mod, "compound_uM")
 
     df.loc[:, embeds_cols] = ebat.T

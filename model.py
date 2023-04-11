@@ -22,7 +22,7 @@ class MultiScaleNet(nn.Module):
         super(MultiScaleNet, self).__init__()
         self.features = make_layers(input_dim)
         self.classifier = nn.Sequential(
-            nn.Linear(128, num_features), #Linear transform
+            nn.Linear(127, num_features), #Linear transform
             nn.ReLU(True),
         )
         self.top_layer = nn.Linear(num_features, num_classes)

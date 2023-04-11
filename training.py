@@ -64,7 +64,7 @@ def train(loader, model, crit, opt, epoch, args):
         data_time.update(time.time() - end)
 
         target = target#.cuda()
-        input_var = torch.autograd.Variable(input_tensor)#.cuda())
+        input_var = torch.autograd.Variable(input_tensor.cuda())
         target_var = torch.autograd.Variable(target)
 
         output = model(input_var)
@@ -116,9 +116,10 @@ def compute_features(dataloader, model, N, args):
     model.eval()
     # discard the label information in the dataloader
     for i, (input_tensor, _) in enumerate(dataloader):
-        input_var = torch.autograd.Variable(input_tensor).cuda()
+        input_var = torch.autograd.Variable(input_tensor.cuda())
         with torch.no_grad():
-            aux = model(input_var).data.numpy().astype('float32').cpu()
+            # aux = model(input_var).data.numpy().astype('float32').cpu()
+            aux = model(input_var).cpu().data.numpy().astype('float32')
 
         if i == 0:
             features = np.zeros((N, aux.shape[1])).astype('float32')
