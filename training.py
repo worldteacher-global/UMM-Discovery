@@ -120,16 +120,21 @@ def compute_features(dataloader, model, N, args):
         with torch.no_grad():
             # aux = model(input_var).data.numpy().astype('float32').cpu()
             aux = model(input_var).cpu().data.numpy().astype('float32')
-
+                  
         if i == 0:
+            # print('i is 0: ',i)
             features = np.zeros((N, aux.shape[1])).astype('float32')
+                   
 
         if i < len(dataloader) - 1:
+            # print('length of dataloader is: ',len(dataloader)-1) 
+            # print('i is greater than 0: ',i)
             features[i * args.batch: (i + 1) * args.batch] = aux
         else:
             # special treatment for final batch
+            # print('i is something other than 0-47: ',i)
             features[i * args.batch:] = aux
-
+            
         # measure elapsed time
         batch_time.update(time.time() - end)
         end = time.time()

@@ -447,12 +447,12 @@ def evaluate_epoch(df_tile, embeds_cols, verbose=False):
     # Remove undefined clusters
     df_labeled = df_tile[df_tile['moa'] != 'undefined'].copy()
     df_labeled = df_labeled.reset_index(drop=True)
-
+    print(df_labeled)
     # Create batch and plate collapse dataframe
     df_well = collapse_well_level(df_labeled.copy(), remove_dmso=True)
     df_plate = collapse_plate_level(df_labeled.copy(), remove_dmso=True)
     df_batch = collapse_batch_level(df_labeled.copy(), remove_dmso=True)
-
+  
     # Nearest Neighborhood
     NSC_df = NSC(df_well, df_plate, df_batch, embeds_cols)
 
@@ -465,10 +465,11 @@ def evaluate_epoch(df_tile, embeds_cols, verbose=False):
 
     NSC_treatment_df = pd.DataFrame([NSC_k_NN(df_treatment, embeds_cols)],
                                     columns=['NSC_1-NN_treatment', 'NSC_2-NN_treatment', 'NSC_3-NN_treatment',
-                                             'NSC_4-NN_treatment'])
+                                            'NSC_4-NN_treatment'])
     NSCB_treatment_df = pd.DataFrame([NSB_k_NN(df_treatment, embeds_cols)],
                                     columns=['NSB_1-NN_treatment', 'NSB_2-NN_treatment', 'NSB_3-NN_treatment',
-                                             'NSB_4-NN_treatment'])
+                                    'NSB_4-NN_treatment'])
+
 
     # Create well DMSO dataframe
     df_dmso = df_tile.loc[(df_tile['compound'] == 'DMSO'), :].copy()
