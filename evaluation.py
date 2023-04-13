@@ -455,6 +455,7 @@ def evaluate_epoch(df_tile, embeds_cols, verbose=False):
   
     # Nearest Neighborhood
     NSC_df = NSC(df_well, df_plate, df_batch, embeds_cols)
+    print(NSC_df)
 
     NSB_df = NSB(df_well, df_plate, df_batch, embeds_cols)
 
