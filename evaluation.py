@@ -86,7 +86,7 @@ def collapse_domain(df, headers, do_median=True, remove_dmso=False):
 
 
 def collapse_well_level(df, do_median=True, remove_dmso=False):
-    avg_df = collapse_domain(df, ['batch', 'plate', 'compound', 'compound_uM', 'pseudoclass', 'moa'], do_median, # removed: 'well' 
+    avg_df = collapse_domain(df, ['batch', 'plate', 'well','compound', 'compound_uM', 'pseudoclass', 'moa'], do_median,  
                              remove_dmso)
     return avg_df
 
@@ -258,6 +258,7 @@ def NSC_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
     label_names = list()
     for comp in df_treatment['compound'].unique():
         df_ = df_treatment.loc[df_treatment['compound'] != comp, :]
+        print('NSC_Executed---------------------------------------------------------------------------')
         knn = KNeighborsClassifier(n_neighbors=4, algorithm='brute', metric='cosine')
         knn.fit(df_.loc[:, embeds_cols], df_.loc[:, 'moa_class'])
 
@@ -281,9 +282,11 @@ def NSC_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
 
 
 def NSB_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
-    # Remove moa with only 1 plate
-    df_treatment = df_treatment[df_treatment['moa'] != 'Cholesterol-lowering']
-    df_treatment = df_treatment[df_treatment['moa'] != 'Kinase inhibitors']
+    # # Remove moa with only 1 plate
+    # df_treatment = df_treatment[df_treatment['moa'] != 'Cholesterol-lowering']
+    # df_treatment = df_treatment[df_treatment['moa'] != 'Kinase inhibitors']
+    df_treatment = df_treatment[df_treatment['moa'] != 'undefined']
+    df_treatment = df_treatment[df_treatment['moa'] != 'best_guess_2']
     df_treatment = df_treatment.reset_index(drop=True)
 
     class_dict = dict(zip(df_treatment['moa'].unique(), np.arange(len(df_treatment['moa'].unique()))))
@@ -321,6 +324,7 @@ def NSB_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
 
 
 def NSC(df_well, df_plate, df_batch, embeds_cols):
+    print('NSC FUNCTION HAS EXECUTED--------------------------------------------------------------------------------------')
     nsc_well = NSC_k_NN(df_well, embeds_cols)
     nsc_plate = NSC_k_NN(df_plate, embeds_cols)
     nsc_batch = NSC_k_NN(df_batch, embeds_cols)
@@ -435,6 +439,7 @@ def evaluate_epoch(df_tile, embeds_cols, verbose=False):
     comp_ = list(df_well['compound'].map(compound_mapper))
     random_ = list(np.random.randint(12, size=len(moa_)))
     same_ = list(np.ones(len(moa_)))
+    
 
     if verbose:
         print('Run validation methods')
@@ -447,15 +452,19 @@ def evaluate_epoch(df_tile, embeds_cols, verbose=False):
     # Remove undefined clusters
     df_labeled = df_tile[df_tile['moa'] != 'undefined'].copy()
     df_labeled = df_labeled.reset_index(drop=True)
-    print(df_labeled)
+    
     # Create batch and plate collapse dataframe
     df_well = collapse_well_level(df_labeled.copy(), remove_dmso=True)
     df_plate = collapse_plate_level(df_labeled.copy(), remove_dmso=True)
     df_batch = collapse_batch_level(df_labeled.copy(), remove_dmso=True)
-  
+    
+    # df_well = df_well[~np.all(df_well==0,axis=1)]
+    # df_plate = df_plate[~np.all(df_plate==0,axis=1)]
+    # df_batch = df_batch[~np.all(df_batch==0,axis=1)]
+
     # Nearest Neighborhood
     NSC_df = NSC(df_well, df_plate, df_batch, embeds_cols)
-    print(NSC_df)
+    print('this is nsc_df -----------------------------------------------------------------------------------------------',NSC_df)
 
     NSB_df = NSB(df_well, df_plate, df_batch, embeds_cols)
 
