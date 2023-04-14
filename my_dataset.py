@@ -79,7 +79,7 @@ class bbbc021_dataset(Dataset):
         rel_dose_list = list()
         for i, row in self.df.iterrows():
             compound = self.df.loc[i, 'compound']
-            if (compound == 'POS-000001'):
+            if (compound == 'DMSO'):
                 rel_dose_list.append(0)
             else:
                 d = self.df.loc[i, 'compound_uM'] / max(self.df.loc[self.df['compound'] == compound, 'compound_uM'])
