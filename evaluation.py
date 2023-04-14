@@ -443,6 +443,8 @@ def evaluate_epoch(df_tile, embeds_cols, verbose=False):
     comp_ = list(df_well['compound'].map(compound_mapper))
     random_ = list(np.random.randint(12, size=len(moa_)))
     same_ = list(np.ones(len(moa_)))
+
+    
     
 
     if verbose:
@@ -467,22 +469,22 @@ def evaluate_epoch(df_tile, embeds_cols, verbose=False):
     # df_batch = df_batch[~np.all(df_batch==0,axis=1)]
 
     # Nearest Neighborhood
-    NSC_df = NSC(df_well, df_plate, df_batch, embeds_cols)
-    print('this is nsc_df -----------------------------------------------------------------------------------------------',NSC_df)
+    # NSC_df = NSC(df_well, df_plate, df_batch, embeds_cols)
+    # print('this is nsc_df -----------------------------------------------------------------------------------------------',NSC_df)
 
-    NSB_df = NSB(df_well, df_plate, df_batch, embeds_cols)
+    # NSB_df = NSB(df_well, df_plate, df_batch, embeds_cols)
 
     # ----------- Treatment level -----------
     # Average per treatment per plate and median per treatment per batch
     avg_df = collapse_plate_level(df_labeled.copy(), do_median=False)
     df_treatment = collapse_treatment_level(avg_df, do_median=True, remove_dmso=True)
 
-    NSC_treatment_df = pd.DataFrame([NSC_k_NN(df_treatment, embeds_cols)],
-                                    columns=['NSC_1-NN_treatment', 'NSC_2-NN_treatment', 'NSC_3-NN_treatment',
-                                            'NSC_4-NN_treatment'])
-    NSCB_treatment_df = pd.DataFrame([NSB_k_NN(df_treatment, embeds_cols)],
-                                    columns=['NSB_1-NN_treatment', 'NSB_2-NN_treatment', 'NSB_3-NN_treatment',
-                                    'NSB_4-NN_treatment'])
+    # NSC_treatment_df = pd.DataFrame([NSC_k_NN(df_treatment, embeds_cols)],
+    #                                 columns=['NSC_1-NN_treatment', 'NSC_2-NN_treatment', 'NSC_3-NN_treatment',
+    #                                         'NSC_4-NN_treatment'])
+    # NSCB_treatment_df = pd.DataFrame([NSB_k_NN(df_treatment, embeds_cols)],
+    #                                 columns=['NSB_1-NN_treatment', 'NSB_2-NN_treatment', 'NSB_3-NN_treatment',
+    #                                 'NSB_4-NN_treatment'])
 
 
     # Create well DMSO dataframe
