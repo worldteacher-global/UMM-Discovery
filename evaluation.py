@@ -251,8 +251,8 @@ def NSC_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
     # Create classes for each moa
     class_dict = dict(zip(df_treatment['moa'].unique(), np.arange(len(df_treatment['moa'].unique()))))
     df_treatment['moa_class'] = df_treatment['moa'].map(class_dict)
-
-    print('df_treatment head',len(df_treatment.columns()))
+    # display(df_treatment)
+    # print('df_treatment head',len(df_treatment.columns()))
     # Create nearest neighbors classifier
     predictions = list()
     labels = list()
@@ -260,9 +260,7 @@ def NSC_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
     for comp in df_treatment['compound'].unique():
         df_ = df_treatment.loc[df_treatment['compound'] != comp, :]
         print('NSC_K_NN_Executed---------------------------------------------------------------------------')
-        print('df treatment',df_.shape)
-        print(comp)
-        print(len(df_treatment['compound'].unique()))
+        # display(df_)
         knn = KNeighborsClassifier(n_neighbors=4, algorithm='brute', metric='cosine')
         knn.fit(df_.loc[:, embeds_cols], df_.loc[:, 'moa_class'])
 
@@ -275,8 +273,8 @@ def NSC_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
     predictions = np.asarray(predictions)
     k_nn_acc = [accuracy_score(labels, predictions[:, 0]),
                 accuracy_score(labels, predictions[:, 1]),
-                accuracy_score(labels, predictions[:, 2]),
-                accuracy_score(labels, predictions[:, 3])]
+                accuracy_score(labels, predictions[:, 2])]
+                # accuracy_score(labels, predictions[:, 3])]
 
     if plot_conf:
         print('There are {} treatments'.format(len(df_treatment)))
@@ -287,10 +285,11 @@ def NSC_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
 
 def NSB_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
     # # Remove moa with only 1 plate
-    df_treatment = df_treatment[df_treatment['moa'] != 'Cholesterol-lowering']
-    df_treatment = df_treatment[df_treatment['moa'] != 'Kinase inhibitors']
-    # df_treatment = df_treatment[df_treatment['moa'] != 'undefined']
-    # df_treatment = df_treatment[df_treatment['moa'] != 'best_guess_2']
+    # df_treatment = df_treatment[df_treatment['moa'] != 'Cholesterol-lowering']
+    # df_treatment = df_treatment[df_treatment['moa'] != 'Kinase inhibitors']
+    df_treatment = df_treatment[df_treatment['moa'] != 0]
+    df_treatment = df_treatment[df_treatment['moa'] != 1]
+    df_treatment = df_treatment[df_treatment['moa'] != 2]
     df_treatment = df_treatment.reset_index(drop=True)
 
     class_dict = dict(zip(df_treatment['moa'].unique(), np.arange(len(df_treatment['moa'].unique()))))
@@ -317,8 +316,8 @@ def NSB_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
     predictions = np.asarray(predictions)
     k_nn_acc = [accuracy_score(labels, predictions[:, 0]),
                 accuracy_score(labels, predictions[:, 1]),
-                accuracy_score(labels, predictions[:, 2]),
-                accuracy_score(labels, predictions[:, 3])]
+                accuracy_score(labels, predictions[:, 2])]
+    #             # accuracy_score(labels, predictions[:, 3])]
 
     if plot_conf:
         print('There are {} treatments'.format(len(df_treatment)))
@@ -329,6 +328,7 @@ def NSB_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
 
 def NSC(df_well, df_plate, df_batch, embeds_cols):
     print('NSC FUNCTION HAS EXECUTED--------------------------------------------------------------------------------------')
+    print(df_well)
     nsc_well = NSC_k_NN(df_well, embeds_cols)
     nsc_plate = NSC_k_NN(df_plate, embeds_cols)
     nsc_batch = NSC_k_NN(df_batch, embeds_cols)
@@ -426,11 +426,11 @@ def evaluate_epoch(df_tile, embeds_cols, verbose=False):
     # ----------- Well level -----------
     # Create well collapse dataframe
     df_well = collapse_well_level(df_tile.copy(), remove_dmso=True)
-    # print('this is evaluate_epoch df_well shape :', df_well.shape)
+   
     # clustering
     predictions, n_clusters, pca_tsne_image = assign_clusters(df_well, embeds_cols, min_cluster_size=10, min_samples=3)
     n_clus_df = pd.DataFrame([n_clusters], columns=['n_clusters_well'])
-    # print('number of clusters',n_clus_df.shape)
+   
     # create mappers
     moa_mapper = dict(zip(sorted(df_well['moa'].unique()), range(len(df_well['moa'].unique()))))
     treatment_mapper = dict(zip(sorted(df_well['pseudoclass'].unique()), range(len(df_well['pseudoclass'].unique()))))
@@ -469,22 +469,22 @@ def evaluate_epoch(df_tile, embeds_cols, verbose=False):
     # df_batch = df_batch[~np.all(df_batch==0,axis=1)]
 
     # Nearest Neighborhood
-    # NSC_df = NSC(df_well, df_plate, df_batch, embeds_cols)
-    # print('this is nsc_df -----------------------------------------------------------------------------------------------',NSC_df)
+    NSC_df = NSC(df_well, df_plate, df_batch, embeds_cols)
+    print('this is nsc_df -----------------------------------------------------------------------------------------------',NSC_df)
 
-    # NSB_df = NSB(df_well, df_plate, df_batch, embeds_cols)
+    NSB_df = NSB(df_well, df_plate, df_batch, embeds_cols)
 
     # ----------- Treatment level -----------
     # Average per treatment per plate and median per treatment per batch
     avg_df = collapse_plate_level(df_labeled.copy(), do_median=False)
     df_treatment = collapse_treatment_level(avg_df, do_median=True, remove_dmso=True)
 
-    # NSC_treatment_df = pd.DataFrame([NSC_k_NN(df_treatment, embeds_cols)],
-    #                                 columns=['NSC_1-NN_treatment', 'NSC_2-NN_treatment', 'NSC_3-NN_treatment',
-    #                                         'NSC_4-NN_treatment'])
-    # NSCB_treatment_df = pd.DataFrame([NSB_k_NN(df_treatment, embeds_cols)],
-    #                                 columns=['NSB_1-NN_treatment', 'NSB_2-NN_treatment', 'NSB_3-NN_treatment',
-    #                                 'NSB_4-NN_treatment'])
+    NSC_treatment_df = pd.DataFrame([NSC_k_NN(df_treatment, embeds_cols)],
+                                    columns=['NSC_1-NN_treatment', 'NSC_2-NN_treatment', 'NSC_3-NN_treatment',
+                                            'NSC_4-NN_treatment'])
+    NSCB_treatment_df = pd.DataFrame([NSB_k_NN(df_treatment, embeds_cols)],
+                                    columns=['NSB_1-NN_treatment', 'NSB_2-NN_treatment', 'NSB_3-NN_treatment',
+                                    'NSB_4-NN_treatment'])
 
 
     # Create well DMSO dataframe
