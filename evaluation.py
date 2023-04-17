@@ -260,9 +260,11 @@ def NSC_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
     for comp in df_treatment['compound'].unique():
         df_ = df_treatment.loc[df_treatment['compound'] != comp, :]
         print('NSC_K_NN_Executed---------------------------------------------------------------------------')
-        # display(df_)
+        display(len(df_))
         knn = KNeighborsClassifier(n_neighbors=4, algorithm='brute', metric='cosine')
+        print('before knn')
         knn.fit(df_.loc[:, embeds_cols], df_.loc[:, 'moa_class'])
+
 
         nn = knn.kneighbors(df_treatment.loc[df_treatment['compound'] == comp, embeds_cols])
         for p in range(nn[1].shape[0]):
@@ -328,7 +330,7 @@ def NSB_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
 
 def NSC(df_well, df_plate, df_batch, embeds_cols):
     print('NSC FUNCTION HAS EXECUTED--------------------------------------------------------------------------------------')
-    print(df_well)
+    print(embeds_cols)
     nsc_well = NSC_k_NN(df_well, embeds_cols)
     nsc_plate = NSC_k_NN(df_plate, embeds_cols)
     nsc_batch = NSC_k_NN(df_batch, embeds_cols)
