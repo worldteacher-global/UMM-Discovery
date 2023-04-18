@@ -262,31 +262,35 @@ def NSC_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
         print('NSC_K_NN_Executed---------------------------------------------------------------------------')
         print(len(df_.columns))
         knn = KNeighborsClassifier(n_neighbors=4, algorithm='brute', metric='cosine')
-        print('before knn')
+        # print('before knn')
         knn.fit(df_.loc[:, embeds_cols], df_.loc[:, 'moa_class'])
-        print('after knn fit')
+        # print('after knn fit')
 
 
         nn = knn.kneighbors(df_treatment.loc[df_treatment['compound'] == comp, embeds_cols])
         print(nn[1].shape[0])
         for p in range(nn[1].shape[0]):
-            print('loop working--------',p)
+            # print('loop working--------',p)
             
             predictions.append(list(df_.iloc[nn[1][p]]['moa_class']))
         labels.extend(df_treatment.loc[df_treatment['compound'] == comp, 'moa_class'])
         label_names.extend(df_treatment.loc[df_treatment['compound'] == comp, 'moa'])
-
+    print('after for loop')    
+    print('prediction len ',len(predictions))
     predictions = np.asarray(predictions)
+    print('prediction shape: ', predictions.shape)
     k_nn_acc = [accuracy_score(labels, predictions[:, 0]),
                 accuracy_score(labels, predictions[:, 1]),
                 accuracy_score(labels, predictions[:, 2])]
                 # accuracy_score(labels, predictions[:, 3])]
-
+    print('accuracy len:', len(k_nn_acc))
+    print('this is plot_conf: ', plot_conf)
     if plot_conf:
         print('There are {} treatments'.format(len(df_treatment)))
         print('NSC is: {:.2f}%'.format(accuracy_score(labels, predictions[:, 0]) * 100))
         plot_confusion_matrix(labels, predictions[:, 0], class_dict, 'NSC', savepath)
     return k_nn_acc
+
 
 
 def NSB_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
@@ -334,10 +338,15 @@ def NSB_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
 
 def NSC(df_well, df_plate, df_batch, embeds_cols):
     print('NSC FUNCTION HAS EXECUTED--------------------------------------------------------------------------------------')
-    print(embeds_cols)
+    # print(embeds_cols)
     nsc_well = NSC_k_NN(df_well, embeds_cols)
     nsc_plate = NSC_k_NN(df_plate, embeds_cols)
     nsc_batch = NSC_k_NN(df_batch, embeds_cols)
+    
+    print('i am nsc_well',len(nsc_well))
+    print('i am nsc_plate',len(nsc_plate))
+    print('i am nsc_batch',len(nsc_batch))
+    
     nsc_average = np.asarray([nsc_well, nsc_plate, nsc_batch]).mean(axis=0)
 
     nsc_list = list()
