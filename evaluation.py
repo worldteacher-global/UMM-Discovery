@@ -264,10 +264,12 @@ def NSC_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
         knn = KNeighborsClassifier(n_neighbors=4, algorithm='brute', metric='cosine')
         print('before knn')
         knn.fit(df_.loc[:, embeds_cols], df_.loc[:, 'moa_class'])
+        print('after knn fit')
 
 
         nn = knn.kneighbors(df_treatment.loc[df_treatment['compound'] == comp, embeds_cols])
         for p in range(nn[1].shape[0]):
+            print('loop working------------------')
             predictions.append(list(df_.iloc[nn[1][p]]['moa_class']))
         labels.extend(df_treatment.loc[df_treatment['compound'] == comp, 'moa_class'])
         label_names.extend(df_treatment.loc[df_treatment['compound'] == comp, 'moa'])
