@@ -260,7 +260,7 @@ def NSC_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
     for comp in df_treatment['compound'].unique():
         df_ = df_treatment.loc[df_treatment['compound'] != comp, :]
         print('NSC_K_NN_Executed---------------------------------------------------------------------------')
-        print(len(df_.columns))
+        # print(len(df_.columns))
         knn = KNeighborsClassifier(n_neighbors=4, algorithm='brute', metric='cosine')
         # print('before knn')
         knn.fit(df_.loc[:, embeds_cols], df_.loc[:, 'moa_class'])
@@ -268,17 +268,17 @@ def NSC_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
 
 
         nn = knn.kneighbors(df_treatment.loc[df_treatment['compound'] == comp, embeds_cols])
-        print(nn[1].shape[0])
+        # print(nn[1].shape[0])
         for p in range(nn[1].shape[0]):
             # print('loop working--------',p)
             
             predictions.append(list(df_.iloc[nn[1][p]]['moa_class']))
         labels.extend(df_treatment.loc[df_treatment['compound'] == comp, 'moa_class'])
         label_names.extend(df_treatment.loc[df_treatment['compound'] == comp, 'moa'])
-    print('after for loop')    
-    print('prediction len ',len(predictions))
+    # print('after for loop')    
+    # print('prediction len ',len(predictions))
     predictions = np.asarray(predictions)
-    print('prediction shape: ', predictions.shape)
+    # print('prediction shape: ', predictions.shape)
     k_nn_acc = [accuracy_score(labels, predictions[:, 0]),
                 accuracy_score(labels, predictions[:, 1]),
                 accuracy_score(labels, predictions[:, 2])]
@@ -294,6 +294,7 @@ def NSC_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
 
 
 def NSB_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
+#    print('NSB_k_nn executed----------------')
     # # Remove moa with only 1 plate
     # df_treatment = df_treatment[df_treatment['moa'] != 'Cholesterol-lowering']
     # df_treatment = df_treatment[df_treatment['moa'] != 'Kinase inhibitors']
@@ -313,17 +314,15 @@ def NSB_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
             df_ = df_treatment.loc[(df_treatment['compound'] != comp) & (df_treatment['table_nr'] != batch), :]
             knn = KNeighborsClassifier(n_neighbors=4, algorithm='brute', metric='cosine')
             knn.fit(df_.loc[:, embeds_cols], df_.loc[:, 'moa_class'])
-
-            nn = knn.kneighbors(
-                df_treatment.loc[(df_treatment['compound'] == comp) & (df_treatment['table_nr'] == batch), embeds_cols])
             for p in range(nn[1].shape[0]):
                 predictions.append(list(df_.iloc[nn[1][p]]['moa_class']))
             labels.extend(
                 df_treatment.loc[(df_treatment['compound'] == comp) & (df_treatment['table_nr'] == batch), 'moa_class'])
             label_names.extend(
                 df_treatment.loc[(df_treatment['compound'] == comp) & (df_treatment['table_nr'] == batch), 'moa'])
-
+    print('error is here?')
     predictions = np.asarray(predictions)
+    print(predictions.shape)
     k_nn_acc = [accuracy_score(labels, predictions[:, 0]),
                 accuracy_score(labels, predictions[:, 1]),
                 accuracy_score(labels, predictions[:, 2])]
@@ -348,17 +347,23 @@ def NSC(df_well, df_plate, df_batch, embeds_cols):
     print('i am nsc_batch',len(nsc_batch))
     
     nsc_average = np.asarray([nsc_well, nsc_plate, nsc_batch]).mean(axis=0)
-
+    print('nsc avg ', nsc_average.shape)
+    
     nsc_list = list()
     nsc_list.extend(nsc_well)
     nsc_list.extend(nsc_plate)
     nsc_list.extend(nsc_batch)
     nsc_list.extend(nsc_average)
 
-    return pd.DataFrame([nsc_list], columns=['NSC_1-NN_well', 'NSC_2-NN_well', 'NSC_3-NN_well', 'NSC_4-NN_well',
-                                             'NSC_1-NN_plate', 'NSC_2-NN_plate', 'NSC_3-NN_plate', 'NSC_4-NN_plate',
-                                             'NSC_1-NN_batch', 'NSC_2-NN_batch', 'NSC_3-NN_batch', 'NSC_4-NN_batch',
-                                             'NSC_1-NN_avg', 'NSC_2-NN_avg', 'NSC_3-NN_avg', 'NSC_4-NN_avg'])
+    return pd.DataFrame([nsc_list], columns=['NSC_1-NN_well', 'NSC_2-NN_well', 'NSC_3-NN_well', 
+                                             'NSC_1-NN_plate', 'NSC_2-NN_plate', 'NSC_3-NN_plate', 
+                                             'NSC_1-NN_batch', 'NSC_2-NN_batch', 'NSC_3-NN_batch', 
+                                             'NSC_1-NN_avg', 'NSC_2-NN_avg', 'NSC_3-NN_avg'])
+
+    # return pd.DataFrame([nsc_list], columns=['NSC_1-NN_well', 'NSC_2-NN_well', 'NSC_3-NN_well', 'NSC_4-NN_well',
+    #                                             'NSC_1-NN_plate', 'NSC_2-NN_plate', 'NSC_3-NN_plate', 'NSC_4-NN_plate',
+    #                                             'NSC_1-NN_batch', 'NSC_2-NN_batch', 'NSC_3-NN_batch', 'NSC_4-NN_batch',
+    #                                             'NSC_1-NN_avg', 'NSC_2-NN_avg', 'NSC_3-NN_avg', 'NSC_4-NN_avg'])
 
 
 def NSB(df_well, df_plate, df_batch, embeds_cols):
