@@ -260,7 +260,7 @@ def NSC_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
     for comp in df_treatment['compound'].unique():
         df_ = df_treatment.loc[df_treatment['compound'] != comp, :]
         print('NSC_K_NN_Executed---------------------------------------------------------------------------')
-        display(len(df_))
+        print(len(df_.columns))
         knn = KNeighborsClassifier(n_neighbors=4, algorithm='brute', metric='cosine')
         print('before knn')
         knn.fit(df_.loc[:, embeds_cols], df_.loc[:, 'moa_class'])
@@ -268,8 +268,10 @@ def NSC_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
 
 
         nn = knn.kneighbors(df_treatment.loc[df_treatment['compound'] == comp, embeds_cols])
+        print(nn[1].shape[0])
         for p in range(nn[1].shape[0]):
-            print('loop working------------------')
+            print('loop working--------',p)
+            
             predictions.append(list(df_.iloc[nn[1][p]]['moa_class']))
         labels.extend(df_treatment.loc[df_treatment['compound'] == comp, 'moa_class'])
         label_names.extend(df_treatment.loc[df_treatment['compound'] == comp, 'moa'])
