@@ -511,11 +511,11 @@ def evaluate_epoch(df_tile, embeds_cols, verbose=False):
 
     #--------------------------------comented out CREATE DMSO DF AND BATCH EFFECT--------------------------------------------
     # Create well DMSO dataframe
-    # df_dmso = df_tile.loc[(df_tile['compound'] == 'DMSO'), :].copy()
-    # df_dmso = df_dmso.reset_index(drop=True)
+    df_dmso = df_tile.loc[(df_tile['compound'] == 'DMSO'), :].copy()
+    df_dmso = df_dmso.reset_index(drop=True)
 
     # Batch effect
-    # batch_acc_df = batch_classification_accuracy(df_dmso, embeds_cols)
+    batch_acc_df = batch_classification_accuracy(df_dmso, embeds_cols)
 
     if verbose:
         print('Evaluation time: {0:.2f} s'.format(time.time() - end))
