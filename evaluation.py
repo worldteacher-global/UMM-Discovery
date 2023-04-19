@@ -259,32 +259,29 @@ def NSC_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
     label_names = list()
     for comp in df_treatment['compound'].unique():
         df_ = df_treatment.loc[df_treatment['compound'] != comp, :]
-        print('NSC_K_NN_Executed---------------------------------------------------------------------------')
-        # print(len(df_.columns))
+       
         knn = KNeighborsClassifier(n_neighbors=4, algorithm='brute', metric='cosine')
-        # print('before knn')
+      
         knn.fit(df_.loc[:, embeds_cols], df_.loc[:, 'moa_class'])
-        # print('after knn fit')
+        
 
 
         nn = knn.kneighbors(df_treatment.loc[df_treatment['compound'] == comp, embeds_cols])
-        # print(nn[1].shape[0])
+     
         for p in range(nn[1].shape[0]):
-            # print('loop working--------',p)
+    
             
             predictions.append(list(df_.iloc[nn[1][p]]['moa_class']))
         labels.extend(df_treatment.loc[df_treatment['compound'] == comp, 'moa_class'])
         label_names.extend(df_treatment.loc[df_treatment['compound'] == comp, 'moa'])
-    # print('after for loop')    
-    # print('prediction len ',len(predictions))
+
     predictions = np.asarray(predictions)
-    # print('prediction shape: ', predictions.shape)
+ 
     k_nn_acc = [accuracy_score(labels, predictions[:, 0]),
                 accuracy_score(labels, predictions[:, 1]),
                 accuracy_score(labels, predictions[:, 2])]
                 # accuracy_score(labels, predictions[:, 3])]
-    print('accuracy len:', len(k_nn_acc))
-    print('this is plot_conf: ', plot_conf)
+
     if plot_conf:
         print('There are {} treatments'.format(len(df_treatment)))
         print('NSC is: {:.2f}%'.format(accuracy_score(labels, predictions[:, 0]) * 100))
@@ -294,13 +291,12 @@ def NSC_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
 
 
 def NSB_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
-#    print('NSB_k_nn executed----------------')
     # # Remove moa with only 1 plate
-    # df_treatment = df_treatment[df_treatment['moa'] != 'Cholesterol-lowering']
-    # df_treatment = df_treatment[df_treatment['moa'] != 'Kinase inhibitors']
-    df_treatment = df_treatment[df_treatment['moa'] != 0]
-    df_treatment = df_treatment[df_treatment['moa'] != 1]
-    df_treatment = df_treatment[df_treatment['moa'] != 2]
+    df_treatment = df_treatment[df_treatment['moa'] != 'Cholesterol-lowering']
+    df_treatment = df_treatment[df_treatment['moa'] != 'Kinase inhibitors']
+    # df_treatment = df_treatment[df_treatment['moa'] != 0]
+    # df_treatment = df_treatment[df_treatment['moa'] != 1]
+    # df_treatment = df_treatment[df_treatment['moa'] != 2]
     df_treatment = df_treatment.reset_index(drop=True)
 
     class_dict = dict(zip(df_treatment['moa'].unique(), np.arange(len(df_treatment['moa'].unique()))))
@@ -324,13 +320,14 @@ def NSB_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
                 df_treatment.loc[(df_treatment['compound'] == comp) & (df_treatment['table_nr'] == batch), 'moa_class'])
             label_names.extend(
                 df_treatment.loc[(df_treatment['compound'] == comp) & (df_treatment['table_nr'] == batch), 'moa'])
-    print('error is here?')
+
     predictions = np.asarray(predictions)
-    print(predictions.shape)
+
     k_nn_acc = [accuracy_score(labels, predictions[:, 0]),
                 accuracy_score(labels, predictions[:, 1]),
                 accuracy_score(labels, predictions[:, 2])]
     #             # accuracy_score(labels, predictions[:, 3])]
+
 
     if plot_conf:
         print('There are {} treatments'.format(len(df_treatment)))
@@ -340,18 +337,12 @@ def NSB_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
 
 
 def NSC(df_well, df_plate, df_batch, embeds_cols):
-    print('NSC FUNCTION HAS EXECUTED--------------------------------------------------------------------------------------')
-    # print(embeds_cols)
     nsc_well = NSC_k_NN(df_well, embeds_cols)
     nsc_plate = NSC_k_NN(df_plate, embeds_cols)
     nsc_batch = NSC_k_NN(df_batch, embeds_cols)
     
-    print('i am nsc_well',len(nsc_well))
-    print('i am nsc_plate',len(nsc_plate))
-    print('i am nsc_batch',len(nsc_batch))
-    
+     
     nsc_average = np.asarray([nsc_well, nsc_plate, nsc_batch]).mean(axis=0)
-    print('nsc avg ', nsc_average.shape)
     
     nsc_list = list()
     nsc_list.extend(nsc_well)
@@ -382,10 +373,14 @@ def NSB(df_well, df_plate, df_batch, embeds_cols):
     nsb_list.extend(nsb_batch)
     nsb_list.extend(nsb_average)
 
-    return pd.DataFrame([nsb_list], columns=['NSB_1-NN_well', 'NSB_2-NN_well', 'NSB_3-NN_well', 'NSB_4-NN_well',
-                                             'NSB_1-NN_plate', 'NSB_2-NN_plate', 'NSB_3-NN_plate', 'NSB_4-NN_plate',
-                                             'NSB_1-NN_batch', 'NSB_2-NN_batch', 'NSB_3-NN_batch', 'NSB_4-NN_batch',
-                                             'NSB_1-NN_avg', 'NSB_2-NN_avg', 'NSB_3-NN_avg', 'NSB_4-NN_avg'])
+    return pd.DataFrame([nsb_list], columns=['NSB_1-NN_well', 'NSB_2-NN_well', 'NSB_3-NN_well',
+                                             'NSB_1-NN_plate', 'NSB_2-NN_plate', 'NSB_3-NN_plate',
+                                             'NSB_1-NN_batch', 'NSB_2-NN_batch', 'NSB_3-NN_batch',
+                                             'NSB_1-NN_avg', 'NSB_2-NN_avg', 'NSB_3-NN_avg'])
+    # return pd.DataFrame([nsb_list], columns=['NSB_1-NN_well', 'NSB_2-NN_well', 'NSB_3-NN_well', 'NSB_4-NN_well',
+    #                                          'NSB_1-NN_plate', 'NSB_2-NN_plate', 'NSB_3-NN_plate', 'NSB_4-NN_plate',
+    #                                          'NSB_1-NN_batch', 'NSB_2-NN_batch', 'NSB_3-NN_batch', 'NSB_4-NN_batch',
+    #                                          'NSB_1-NN_avg', 'NSB_2-NN_avg', 'NSB_3-NN_avg', 'NSB_4-NN_avg'])
 
 
 def create_consistency_matrix(df_well, predictions, savepath):
@@ -494,9 +489,9 @@ def evaluate_epoch(df_tile, embeds_cols, verbose=False):
 
     # Nearest Neighborhood
     NSC_df = NSC(df_well, df_plate, df_batch, embeds_cols)
-    print('this is nsc_df -----------------------------------------------------------------------------------------------',NSC_df)
 
     NSB_df = NSB(df_well, df_plate, df_batch, embeds_cols)
+
 
     # ----------- Treatment level -----------
     # Average per treatment per plate and median per treatment per batch
@@ -504,19 +499,23 @@ def evaluate_epoch(df_tile, embeds_cols, verbose=False):
     df_treatment = collapse_treatment_level(avg_df, do_median=True, remove_dmso=True)
 
     NSC_treatment_df = pd.DataFrame([NSC_k_NN(df_treatment, embeds_cols)],
-                                    columns=['NSC_1-NN_treatment', 'NSC_2-NN_treatment', 'NSC_3-NN_treatment',
-                                            'NSC_4-NN_treatment'])
+                                    columns=['NSC_1-NN_treatment', 'NSC_2-NN_treatment', 'NSC_3-NN_treatment'])
+    # NSC_treatment_df = pd.DataFrame([NSC_k_NN(df_treatment, embeds_cols)],
+    #                             columns=['NSC_1-NN_treatment', 'NSC_2-NN_treatment', 'NSC_3-NN_treatment',
+    #                                     'NSC_4-NN_treatment'])
     NSCB_treatment_df = pd.DataFrame([NSB_k_NN(df_treatment, embeds_cols)],
-                                    columns=['NSB_1-NN_treatment', 'NSB_2-NN_treatment', 'NSB_3-NN_treatment',
-                                    'NSB_4-NN_treatment'])
+                                    columns=['NSB_1-NN_treatment', 'NSB_2-NN_treatment', 'NSB_3-NN_treatment'])
+    # NSCB_treatment_df = pd.DataFrame([NSB_k_NN(df_treatment, embeds_cols)],
+    #                             columns=['NSB_1-NN_treatment', 'NSB_2-NN_treatment', 'NSB_3-NN_treatment',
+    #                             'NSB_4-NN_treatment'])
 
-
+    #--------------------------------comented out CREATE DMSO DF AND BATCH EFFECT--------------------------------------------
     # Create well DMSO dataframe
-    df_dmso = df_tile.loc[(df_tile['compound'] == 'DMSO'), :].copy()
-    df_dmso = df_dmso.reset_index(drop=True)
+    # df_dmso = df_tile.loc[(df_tile['compound'] == 'DMSO'), :].copy()
+    # df_dmso = df_dmso.reset_index(drop=True)
 
     # Batch effect
-    batch_acc_df = batch_classification_accuracy(df_dmso, embeds_cols)
+    # batch_acc_df = batch_classification_accuracy(df_dmso, embeds_cols)
 
     if verbose:
         print('Evaluation time: {0:.2f} s'.format(time.time() - end))
