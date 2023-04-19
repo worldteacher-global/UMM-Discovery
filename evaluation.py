@@ -314,6 +314,10 @@ def NSB_k_NN(df_treatment, embeds_cols, plot_conf=False, savepath=None):
             df_ = df_treatment.loc[(df_treatment['compound'] != comp) & (df_treatment['table_nr'] != batch), :]
             knn = KNeighborsClassifier(n_neighbors=4, algorithm='brute', metric='cosine')
             knn.fit(df_.loc[:, embeds_cols], df_.loc[:, 'moa_class'])
+            
+            nn = knn.kneighbors(
+                df_treatment.loc[(df_treatment['compound'] == comp) & (df_treatment['table_nr'] == batch), embeds_cols])
+            
             for p in range(nn[1].shape[0]):
                 predictions.append(list(df_.iloc[nn[1][p]]['moa_class']))
             labels.extend(
