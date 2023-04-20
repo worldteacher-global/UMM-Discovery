@@ -96,7 +96,7 @@ def preprocess_features(npdata, n_components=16, method='PCA', n_jobs=1):
     npdata =  npdata.astype('float32')
 
     print(npdata.shape)
-    print('this is npdata: ', npdata.head())#-----------------------------
+    print('this is npdata: ', npdata[:5])#-----------------------------
 
     # Apply PCA-whitening with Faiss
     if method == 'PCA':
