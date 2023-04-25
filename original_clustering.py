@@ -63,8 +63,7 @@ class ReassignedDataset(data.Dataset):
         images = []
         for j, idx in enumerate(image_indexes):
             # They only use one image. We need multiple images
-            # Last entry in tuple is index. First entries are image paths, but number are unknown
-            path = dataset[idx][:-1]
+            path = dataset[idx][0]
             pseudolabel = label_to_idx[pseudolabels[j]]
             images.append((path, pseudolabel))
         return images
@@ -77,18 +76,11 @@ class ReassignedDataset(data.Dataset):
             tuple: (image, pseudolabel) where pseudolabel is the cluster of index datapoint
         """
         path, pseudolabel = self.imgs[index]
-        img1,img2 = [sktiff.imread(image_path).astype('float32') for image_path in path]
-        image = np.zeros((img1.shape[0], img1.shape[1], 2), dtype='float32')
-
-        image[:,:,0] = img1.copy()
-        image[:,:,1] = img2.copy()
-
-
-        # img = sktiff.imread(path).astype('float32')
+        img = sktiff.imread(path).astype('float32')
 
         if self.transform is not None:
-            image = self.transform(image)
-        return image, pseudolabel
+            img = self.transform(img)
+        return img, pseudolabel
 
     def __len__(self):
         return len(self.imgs)
