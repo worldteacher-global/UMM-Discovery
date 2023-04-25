@@ -48,6 +48,8 @@ def train(loader, model, crit, opt, epoch, args):
     data_time = AverageMeter()
     forward_time = AverageMeter()
     backward_time = AverageMeter()
+    
+  
 
     # switch to train mode
     model.train()
@@ -62,11 +64,13 @@ def train(loader, model, crit, opt, epoch, args):
     end = time.time()
     for i, (input_tensor, target) in enumerate(loader):
         data_time.update(time.time() - end)
+        
+        print('Input tensor shape: ',input_tensor.size())
 
-        target = target#.cuda()
+        target = target.cuda()
         input_var = torch.autograd.Variable(input_tensor.cuda())
         target_var = torch.autograd.Variable(target)
-
+#-----------------------------------------------------------------
         output = model(input_var)
         loss = crit(output, target_var)
 
